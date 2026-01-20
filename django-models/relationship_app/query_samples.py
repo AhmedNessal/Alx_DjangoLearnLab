@@ -18,7 +18,7 @@ def create_sample_data():
 def run_queries():
     # Query all books by George Orwell
     orwell = Author.objects.get(name="George Orwell")
-    books_by_orwell = orwell.books.all()
+    books_by_orwell = orwell.books.all()  # type: ignore
     print("Books by George Orwell:", books_by_orwell)
 
     # List all books in Central Library
@@ -27,7 +27,7 @@ def run_queries():
     print("Books in Central Library:", books_in_library)
 
     # Retrieve the librarian for Central Library
-    librarian = library.librarian
+    librarian = library.librarian  # type: ignore
     print("Librarian of Central Library:", librarian)
 
 if __name__ == "__main__":
