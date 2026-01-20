@@ -18,12 +18,15 @@ def run_queries():
     # Query all books by a specific author
     author_name = "George Orwell"
     author = Author.objects.get(name=author_name)
-    print(f"Books by {author_name}:", list(author.books.all()))
+    books_by_author = Book.objects.filter(author=author) 
+    print(f"Books by {author_name}:", list(books_by_author))
 
     # List all books in a library
     library_name = "Central Library"
     library = Library.objects.get(name=library_name)
-    print(f"Books in {library_name}:", list(library.books.all()))
+    books_in_library = library.books.all()  
+    print(f"Books in {library_name}:", list(books_in_library))
 
     # Retrieve the librarian for a library
-    print(f"Librarian of {library_name}:", library.librarian)
+    librarian = library.librarian # type: ignore
+    print(f"Librarian of {library_name}:", librarian)
