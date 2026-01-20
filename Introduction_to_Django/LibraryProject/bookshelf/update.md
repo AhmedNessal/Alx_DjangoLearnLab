@@ -1,11 +1,12 @@
-```markdown
-```python
 from bookshelf.models import Book
 
-b = Book.objects.first()
-b.title = "Nineteen Eighty-Four"
-b.save()
+# Retrieve the book first
+book = Book.objects.get(title="1984")
 
-b.title
+# Update the title
+book.title = "Nineteen Eighty-Four"
+book.save()
+
+book.title
 # Expected output:
 # 'Nineteen Eighty-Four'
