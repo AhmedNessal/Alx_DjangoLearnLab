@@ -1,4 +1,3 @@
-```markdown
 # CRUD Operations for Book Model
 
 ## Create
