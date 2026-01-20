@@ -1,5 +1,6 @@
 from relationship_app.models import Author, Book, Library, Librarian
 
+# Create sample data
 def create_sample_data():
     author1 = Author.objects.create(name="George Orwell")
     author2 = Author.objects.create(name="J.K. Rowling")
@@ -15,12 +16,14 @@ def create_sample_data():
 
 def run_queries():
     # Query all books by a specific author
-    orwell = Author.objects.get(name="George Orwell")
-    print("Books by George Orwell:", list(orwell.books.all()))
+    author_name = "George Orwell"
+    author = Author.objects.get(name=author_name)
+    print(f"Books by {author_name}:", list(author.books.all()))
 
     # List all books in a library
-    library = Library.objects.get(name="Central Library")
-    print("Books in Central Library:", list(library.books.all()))
+    library_name = "Central Library"
+    library = Library.objects.get(name=library_name)
+    print(f"Books in {library_name}:", list(library.books.all()))
 
     # Retrieve the librarian for a library
-    print("Librarian of Central Library:", library.librarian)
+    print(f"Librarian of {library_name}:", library.librarian)
