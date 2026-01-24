@@ -1,19 +1,22 @@
-from django.shortcuts import render, get_object_or_404
-from django.views.generic import DetailView
-from .models import Book, Library
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.views.generic.detail import DetailView
 
-# Function-based view: list all books
+from .models import Library
+from .models import Book
+
+
 def list_books(request):
     books = Book.objects.all()
-    return render(request, 'relationship_app/list_books.html', {'books': books})
+    output = []
 
-# Class-based view: library detail
+    for book in books:
+        output.append(f"{book.title} by {book.author.name}")
+
+    return HttpResponse("\n".join(output))
+
+
 class LibraryDetailView(DetailView):
     model = Library
-    template_name = 'relationship_app/library_detail.html'
-    context_object_name = 'library'  # will be used in template
-
-    # Optional: override get_object if you want to use query param
-    def get_object(self):
-        # e.g., library_id passed in URL
-        return get_object_or_404(Library, id=self.kwargs['pk'])
+    template_name = "relationship_app/library_detail.html"
+    context_object_name = "library"
