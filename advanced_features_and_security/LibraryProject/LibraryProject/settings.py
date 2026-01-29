@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-tf^$_=4d30olna)s4mv^_^48sujr=f4r!3#v(!-t23)zlno!&('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -52,7 +52,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
+
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'",)
 
 ROOT_URLCONF = 'LibraryProject.urls'
 
@@ -120,3 +124,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# -------------------------
+# Security Settings
+# -------------------------
+
+DEBUG = False  # Important: disable debug in production
+
+# Browser protections
+SECURE_BROWSER_XSS_FILTER = True  # Prevent XSS attacks via browser filter
+X_FRAME_OPTIONS = 'DENY'          # Prevent clickjacking
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent MIME type sniffing
+
+# Cookies
+CSRF_COOKIE_SECURE = True       # Only send CSRF cookie over HTTPS
+SESSION_COOKIE_SECURE = True    # Only send session cookie over HTTPS
+
+# Optional: Content Security Policy header
+# You can use django-csp or manually set headers in middleware/views
