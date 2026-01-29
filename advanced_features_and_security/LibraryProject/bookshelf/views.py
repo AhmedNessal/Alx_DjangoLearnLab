@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import permission_required
 from .models import Book
 from django.db.models import Q
+from .forms import ExampleForm
 
 # -------------------------
 # Book Views with Permissions
