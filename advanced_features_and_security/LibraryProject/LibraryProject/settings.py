@@ -142,3 +142,38 @@ SESSION_COOKIE_SECURE = True    # Only send session cookie over HTTPS
 
 # Optional: Content Security Policy header
 # You can use django-csp or manually set headers in middleware/views
+# -------------------------
+# HTTPS & Secure Redirects
+# -------------------------
+
+# Redirect all HTTP requests to HTTPS
+SECURE_SSL_REDIRECT = True  # Important: forces HTTPS for all requests
+
+# HTTP Strict Transport Security (HSTS)
+SECURE_HSTS_SECONDS = 31536000           # One year in seconds
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True    # Apply HSTS to all subdomains
+SECURE_HSTS_PRELOAD = True               # Allow HSTS preload
+
+# -------------------------
+# Secure Cookies
+# -------------------------
+SESSION_COOKIE_SECURE = True   # Only send session cookie over HTTPS
+CSRF_COOKIE_SECURE = True      # Only send CSRF cookie over HTTPS
+
+# -------------------------
+# Secure Headers
+# -------------------------
+X_FRAME_OPTIONS = 'DENY'             # Prevent clickjacking
+SECURE_CONTENT_TYPE_NOSNIFF = True   # Prevent MIME type sniffing
+SECURE_BROWSER_XSS_FILTER = True     # Enable browser XSS filter
+
+"""
+Deployment & HTTPS Notes:
+
+1. Ensure your web server (Apache, Nginx) is configured with SSL/TLS certificates.
+2. For local testing, you can use Django's runserver with HTTPS via tools like django-sslserver.
+3. SECURE_SSL_REDIRECT will automatically redirect all HTTP requests to HTTPS.
+4. HSTS settings (SECURE_HSTS_*) tell browsers to always use HTTPS for the specified period.
+5. Secure cookies ensure that session and CSRF cookies are only sent over HTTPS.
+6. X_FRAME_OPTIONS, SECURE_CONTENT_TYPE_NOSNIFF, and SECURE_BROWSER_XSS_FILTER improve client-side security.
+"""
