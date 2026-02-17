@@ -18,7 +18,7 @@ urlpatterns = [
     path("login/", views.login_view, name="login"), # type: ignore
     path("logout/", views.logout_view, name="logout"), # type: ignore
     path("profile/", views.profile_view, name="profile"),   # type: ignore
-    path('post/<int:post_id>/comments/new/', CommentCreateView.as_view(), name='comment-create'),
+    path('post/<int:pk>/comments/new/', views.CommentCreateView.as_view(), name='comment-create'),
     path('comment/<int:pk>/update/', CommentUpdateView.as_view(), name='comment-update'),
     path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment-delete'),
 ]
