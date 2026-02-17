@@ -10,6 +10,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post
 from .forms import PostForm
+from django.shortcuts import get_object_or_404
+from .models import Comment, Post
+from .forms import CommentForm
 
 # Registration
 def register_view(request):
@@ -60,7 +63,7 @@ class PostListView(ListView):
     ordering = ['-published_date']
 
 # Show single post
-class PostDetailView(DetailView):
+class PostDetailView(DetailView): # type: ignore
     model = Post
     template_name = 'blog/post_detail.html'
 
@@ -85,11 +88,51 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return self.request.user == post.author # type: ignore
 
 # Delete a post (only author)
-class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class PostDetailView(DetailView):
     model = Post
-    template_name = 'blog/post_confirm_delete.html'
-    success_url = reverse_lazy('post-list')
+    template_name = 'blog/post_detail.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = CommentForm()
+        return context
+# Add a comment to a post
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+    def form_valid(self, form):
+        post_id = self.kwargs['post_id']
+        post = get_object_or_404(Post, pk=post_id)
+        form.instance.author = self.request.user
+        form.instance.post = post
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.object.post.get_absolute_url()  # type: ignore
+
+# Update a comment
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
 
     def test_func(self):
-        post = self.get_object()
-        return self.request.user == post.author # type: ignore
+        comment = self.get_object()
+        return self.request.user == comment.author # type: ignore
+
+    def get_success_url(self):
+        return self.object.post.get_absolute_url()   # type: ignore
+
+# Delete a comment
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author # type: ignore
+
+    def get_success_url(self):
+        return self.object.post.get_absolute_url() # type: ignore
