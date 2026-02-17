@@ -4,15 +4,15 @@ from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post
 from .forms import PostForm
 from django.shortcuts import get_object_or_404
 from .models import Comment, Post
 from .forms import CommentForm
+from django.db.models import Q
+from taggit.models import Tag
 
 # Registration
 def register_view(request):
@@ -88,14 +88,14 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return self.request.user == post.author # type: ignore
 
 # Delete a post (only author)
-class PostDetailView(DetailView):
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
-    template_name = 'blog/post_detail.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = CommentForm()
-        return context
+    template_name = 'blog/post_confirm_delete.html'  # create this template
+    success_url = reverse_lazy('post-list')  # change to your list view name
+
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author  # type: ignore
 # Add a comment to a post
 class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
@@ -135,3 +135,25 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return self.object.post.get_absolute_url() # type: ignore
+class SearchResultsView(ListView):
+    model = Post
+    template_name = 'blog/search_results.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            return Post.objects.filter(
+                Q(title__icontains=query) |
+                Q(content__icontains=query) |
+                Q(tags__name__icontains=query)
+            ).distinct()
+        return Post.objects.none()
+class TaggedPostsListView(ListView):
+    model = Post
+    template_name = 'blog/tagged_posts.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        tag_slug = self.kwargs['tag_slug']
+        return Post.objects.filter(tags__slug=tag_slug)
