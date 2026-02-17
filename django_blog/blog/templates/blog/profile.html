@@ -1,0 +1,11 @@
+{% extends "blog/base.html" %}
+{% block content %}
+<h2>Your Profile</h2>
+<form method="post">
+    {% csrf_token %}
+    <label>Username: {{ user.username }}</label><br>
+    <label>Email:</label>
+    <input type="email" name="email" value="{{ user.email }}"><br><br>
+    <button type="submit">Update</button>
+</form>
+{% endblock %}
