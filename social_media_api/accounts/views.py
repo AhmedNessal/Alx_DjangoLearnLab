@@ -3,7 +3,28 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import get_object_or_404
+from rest_framework import generics, permissions, status
+from .models import CustomUser # type: ignore
 
+class FollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = CustomUser.objects.all()
+
+    def post(self, request, user_id):
+        user_to_follow = get_object_or_404(CustomUser.objects.all(), id=user_id)
+
+        if user_to_follow == request.user:
+            return Response(
+                {"error": "You cannot follow yourself"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        request.user.following.add(user_to_follow)
+        return Response(
+            {"message": "User followed successfully"},
+            status=status.HTTP_200_OK
+        )
 User = get_user_model()
 
 @api_view(['POST'])
