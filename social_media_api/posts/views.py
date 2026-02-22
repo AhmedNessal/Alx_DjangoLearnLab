@@ -14,11 +14,9 @@ class FeedView(generics.ListAPIView):
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self): # type: ignore
-        following_users = self.request.user.following.all() # type: ignore
-        return Post.objects.filter(
-            author__in=following_users
-        ).order_by('-created_at')
+    def get_queryset(self):
+        following_users = self.request.user.following.all()
+        return Post.objects.filter(author__in=following_users).order_by('-created_at')
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer
