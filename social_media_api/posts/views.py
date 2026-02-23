@@ -42,13 +42,11 @@ class LikePostView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)  
+        post = generics.get_object_or_404(Post, pk=pk)  # <- use DRF's get_object_or_404
 
-        # Prevent liking the same post twice
-        if Like.objects.filter(post=post, user=request.user).exists():
+        like, created = Like.objects.get_or_create(post=post, user=request.user)  # <- use get_or_create
+        if not created:
             return Response({"detail": "You already liked this post"}, status=status.HTTP_400_BAD_REQUEST)
-
-        Like.objects.create(post=post, user=request.user)
 
         # Create notification for the post author
         if post.author != request.user:
